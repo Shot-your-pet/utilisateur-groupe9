@@ -12,5 +12,5 @@ public interface FacadeUtilisateur {
     public Utilisateur modifierUtilisateur(UUID idKeycloakUtilisateur, ModifierUtilisateurDTO modifierUtilisateurDTO) throws Exception;
     public void supprimerUtilisateur(UUID idKeycloakUtilisateur) throws Exception;
     public Utilisateur consulterUtilisateur(UUID idKeycloak);
-    public void modifierAvatar(UUID idKeycloakUtilisateur, Long idImage);
+    public void modifierAvatar(UUID idKeycloakUtilisateur, UUID idImage) throws Exception;
 }

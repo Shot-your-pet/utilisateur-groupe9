@@ -7,9 +7,11 @@ import fr.miage.utilisateurgroupe9.model.entity.dto.ModifierUtilisateurDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
@@ -121,13 +123,13 @@ public class KeycloakEventListener {
         }
     }
 
-    public record ImageInfo(Long idImage, UUID idKeycloakUtilisateur) {
+    public record ImageInfo(UUID idKeycloak, UUID idImage) implements Serializable {
     }
 
     @RabbitListener(queues = UPDATE_AVATAR_QUEUE)
-    public void modifierAvatar(ImageInfo imageInfo) {
-        this.facadeUtilisateur.modifierAvatar(imageInfo.idKeycloakUtilisateur(), imageInfo.idImage());
-        LOG.trace("Modification de l'avatar de l'utilisateur : {}", imageInfo);
+    public void modifierAvatar(ImageInfo imageInfo) throws Exception {
+        LOG.info("Modification de l'avatar de l'utilisateur : {}", imageInfo);
+        this.facadeUtilisateur.modifierAvatar(imageInfo.idKeycloak(), imageInfo.idImage());
     }
 
     @RabbitListener(queues = GET_INFOS_UTILISATEUR_QUEUE)

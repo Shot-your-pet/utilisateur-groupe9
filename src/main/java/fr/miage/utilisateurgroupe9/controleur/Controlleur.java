@@ -17,10 +17,10 @@ public class Controlleur {
         this.facadeUtilisateur = facadeUtilisateur;
     }
 
-    public record ImageInfoDTO(Long idImage){}
+    public record ImageInfoDTO(UUID idImage){}
 
     @PutMapping("/avatar")
-    public ResponseEntity<Void> modifierAvatar(Authentication authentication, @RequestBody ImageInfoDTO imageInfoDTO){
+    public ResponseEntity<Void> modifierAvatar(Authentication authentication, @RequestBody ImageInfoDTO imageInfoDTO) throws Exception {
         this.facadeUtilisateur.modifierAvatar(UUID.fromString(authentication.getName()), imageInfoDTO.idImage());
         return ResponseEntity.ok().build();
 

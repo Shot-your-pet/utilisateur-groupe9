@@ -68,8 +68,8 @@ public class FacadeUtilisateurImpl implements FacadeUtilisateur{
     }
 
     @Override
-    public void modifierAvatar(UUID idKeycloak, Long idImage) {
-        Utilisateur utilisateur = this.utilisateurRepository.findById(idKeycloak).orElseThrow();
+    public void modifierAvatar(UUID idKeycloak, UUID idImage) throws Exception {
+        Utilisateur utilisateur = this.utilisateurRepository.findById(idKeycloak).orElseThrow(() -> new Exception("Utilisateur non trouvé"));
         utilisateur.setIdAvatar(idImage);
         this.utilisateurRepository.save(utilisateur);
     }

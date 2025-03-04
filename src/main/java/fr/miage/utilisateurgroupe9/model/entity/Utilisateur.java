@@ -22,7 +22,7 @@ public class Utilisateur {
     private String email;
     private LocalDate dateNaissance;
     private LocalDateTime dateCreation;
-    private Long idAvatar;
+    private UUID idAvatar;
 
     public Utilisateur() {
     }
@@ -44,11 +44,11 @@ public class Utilisateur {
         this.pseudo = pseudo;
     }
 
-    public Long getIdAvatar() {
+    public UUID getIdAvatar() {
         return idAvatar;
     }
 
-    public void setIdAvatar(Long idAvatar) {
+    public void setIdAvatar(UUID idAvatar) {
         this.idAvatar = idAvatar;
     }
 
