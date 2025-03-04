@@ -1,10 +1,8 @@
 package fr.miage.utilisateurgroupe9.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -12,21 +10,48 @@ import java.util.UUID;
 public class Utilisateur {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    @Column(unique = true)
+    private UUID idKeycloak;
+
+    @Column(unique = true)
+    private String pseudo;
     private String nom;
     private String prenom;
+
+    @Column(unique = true)
     private String email;
-    private LocalDateTime dateNaissance;
+    private LocalDate dateNaissance;
     private LocalDateTime dateCreation;
+    private Long idAvatar;
 
-    public UUID getId() {
-        return id;
+    public Utilisateur() {
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public Utilisateur(UUID idKeycloak, String pseudo, String nom, String prenom, String email, LocalDate dateNaissance) {
+        this.idKeycloak = idKeycloak;
+        this.pseudo = pseudo;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.dateNaissance = dateNaissance;
     }
+
+    public String getPseudo() {
+        return pseudo;
+    }
+
+    public void setPseudo(String pseudo) {
+        this.pseudo = pseudo;
+    }
+
+    public Long getIdAvatar() {
+        return idAvatar;
+    }
+
+    public void setIdAvatar(Long idAvatar) {
+        this.idAvatar = idAvatar;
+    }
+
 
     public String getNom() {
         return nom;
@@ -48,15 +73,23 @@ public class Utilisateur {
         return email;
     }
 
+    public UUID getIdKeycloak() {
+        return idKeycloak;
+    }
+
+    public void setIdKeycloak(UUID idKeycloak) {
+        this.idKeycloak = idKeycloak;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public LocalDateTime getDateNaissance() {
+    public LocalDate getDateNaissance() {
         return dateNaissance;
     }
 
-    public void setDateNaissance(LocalDateTime dateNaissance) {
+    public void setDateNaissance(LocalDate dateNaissance) {
         this.dateNaissance = dateNaissance;
     }
 
@@ -71,7 +104,8 @@ public class Utilisateur {
     @Override
     public String toString() {
         return "Utilisateur{" +
-                "id=" + id +
+                "idKeycloak=" + idKeycloak +
+                ", pseudo='" + pseudo + '\'' +
                 ", nom='" + nom + '\'' +
                 ", prenom='" + prenom + '\'' +
                 ", email='" + email + '\'' +
