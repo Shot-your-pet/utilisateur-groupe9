@@ -26,7 +26,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}/utilisateur-groupe9:1.0.0-${{ github.sha::0:7 }} .
+        run: docker build -t ghcr.io/${{ github.repository }}/utilisateur-groupe9:1.0.0-$(echo ${{ github.sha }} | cut -c1-7) .
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}/utilisateur-groupe9:1.0.0-${{ github.sha::0:7 }}
+        run: docker push ghcr.io/${{ github.repository }}/utilisateur-groupe9:1.0.0-$(echo ${{ github.sha }} | cut -c1-7)
