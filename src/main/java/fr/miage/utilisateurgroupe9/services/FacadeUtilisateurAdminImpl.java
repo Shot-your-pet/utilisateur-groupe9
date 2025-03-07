@@ -40,10 +40,18 @@ public class FacadeUtilisateurAdminImpl implements FacadeUtilisateurAdmin{
     @Override
     public Utilisateur modifierUtilisateur(UUID idKeycloak, ModifierUtilisateurDTO modifierUtilisateurDTO, UUID idKeycloakAdmin) throws Exception {
         Utilisateur utilisateur = this.utilisateurRepository.findById(idKeycloak).orElseThrow(() -> new Exception("Utilisateur non trouvé"));
-        utilisateur.setPseudo(modifierUtilisateurDTO.pseudo());
-        utilisateur.setNom(modifierUtilisateurDTO.nom());
-        utilisateur.setPrenom(modifierUtilisateurDTO.prenom());
-        utilisateur.setEmail(modifierUtilisateurDTO.email());
+        if (modifierUtilisateurDTO.pseudo() != null) {
+            utilisateur.setPseudo(modifierUtilisateurDTO.pseudo());
+        }
+        if (modifierUtilisateurDTO.nom() != null) {
+            utilisateur.setNom(modifierUtilisateurDTO.nom());
+        }
+        if (modifierUtilisateurDTO.prenom() != null) {
+            utilisateur.setPrenom(modifierUtilisateurDTO.prenom());
+        }
+        if (modifierUtilisateurDTO.email() != null) {
+            utilisateur.setEmail(modifierUtilisateurDTO.email());
+        }
         LOG.trace("Modification de l'utilisateur : {} par {}", utilisateur, idKeycloakAdmin);
         return this.utilisateurRepository.save(utilisateur);
         // TODO : Notifier les autres services du changement si besoin

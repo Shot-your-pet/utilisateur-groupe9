@@ -1,18 +1,17 @@
 package fr.miage.utilisateurgroupe9.services;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 @Service
-public class KeycloakEventsSender {
+public class RabbitEventsSender {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public KeycloakEventsSender(RabbitTemplate rabbitTemplate) {
+    public RabbitEventsSender(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 

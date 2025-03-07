@@ -36,43 +36,108 @@ public class KeycloakEventListener {
 
 
     @RabbitListener(queues = KEYCLOAK_QUEUE)
-    public void receiveMessage(String message) {
+    public void receiveMessage(Map<String, Object> payload) {
         try {
             // Convertir le message JSON en une Map
-            Map<String, Object> payload = objectMapper.readValue(message, new TypeReference<Map<String, Object>>() {});
-            System.out.println("Message reçu: " + payload);
+//            Map<String, Object> payload = objectMapper.readValue(message, new TypeReference<Map<String, Object>>() {});
+            LOG.info("Message reçu: {}", payload);
 
             // Vérifier si c'est un événement utilisateur (propriété "eventType") ou admin ("operationType")
             if (payload.containsKey("eventType")) {
                 String eventType = (String) payload.get("eventType");
-
+                Map<String, Object> details;
                 switch (eventType) {
                     case "REGISTER":
+                        // Les informations de l'utilisateur sont dans "details"
+                        details = (Map<String, Object>) payload.get("details");
+
+                        String username = (String) payload.get("username");
+                        if (username == null && details != null) {
+                            username = (String) details.get("username");
+                        }
+
+                        String firstName = (String) payload.get("firstName");
+                        if (firstName == null && details != null) {
+                            firstName = (String) details.get("firstName");
+                            if(firstName == null) {
+                                firstName = (String) details.get("first_name");
+                            }
+                        }
+
+                        String lastName = (String) payload.get("lastName");
+                        if (lastName == null && details != null) {
+                            lastName = (String) details.get("lastName");
+                            if(lastName == null) {
+                                lastName = (String) details.get("last_name");
+                            }
+                        }
+
+                        String email = (String) payload.get("email");
+                        if (email == null && details != null) {
+                            email = (String) details.get("email");
+                        }
+
+                        String dateNaissanceStr = (String) payload.get("dateNaissance");
+                        if (dateNaissanceStr == null && details != null) {
+                            dateNaissanceStr = (String) details.get("dateNaissance");
+                        }
+                        LocalDate dateNaissance = null;
+                        if (dateNaissanceStr != null && !dateNaissanceStr.trim().isEmpty()) {
+                            dateNaissance = LocalDate.parse(dateNaissanceStr);
+                        }
+
                         CreerUtilisateurDTO creerUtilisateurDTO = new CreerUtilisateurDTO(
-                                (UUID) payload.get("userId"),
-                                (String) payload.get("username"),
-                                (String) payload.get("firstName"),
-                                (String) payload.get("lastName"),
-                                (String) payload.get("email"),
-                                (LocalDate) payload.get("dateNaissance")
+                                UUID.fromString((String) payload.get("userId")),
+                                username,
+                                firstName,
+                                lastName,
+                                email,
+                                dateNaissance
                         );
-                        this.facadeUtilisateur.creerUtilisateur(creerUtilisateurDTO);
-                        LOG.trace("Evenement keycloak de création d'utilisateur: {}", eventType);
+                        facadeUtilisateur.creerUtilisateur(creerUtilisateurDTO);
+                        LOG.trace("Evenement keycloak de création d'utilisateur terminé: {}", eventType);
                         break;
+
                     case "UPDATE_PROFILE":
+                        details = (Map<String, Object>) payload.get("details");
+
+                        // Récupération de l'username (si disponible au niveau racine)
+                        String updatedUsername = (String) payload.get("username");
+
+                        // Pour le prénom, on privilégie la valeur mise à jour dans "details" sinon le champ au niveau racine
+                        String updatedFirstName = details != null && details.get("updated_first_name") != null
+                                ? (String) details.get("updated_first_name")
+                                : (String) payload.get("firstName");
+
+                        // Pour le nom, on fait de même (ici on cherche "updated_last_name" si disponible)
+                        String updatedLastName = details != null && details.get("updated_last_name") != null
+                                ? (String) details.get("updated_last_name")
+                                : (String) payload.get("lastName");
+
+                        // Pour l'email, on recherche également une valeur mise à jour dans "details"
+                        String updatedEmail = details != null && details.get("updated_email") != null
+                                ? (String) details.get("updated_email")
+                                : (String) payload.get("email");
+
                         ModifierUtilisateurDTO modifierUtilisateurDTO = new ModifierUtilisateurDTO(
-                                (String) payload.get("username"),
-                                (String) payload.get("firstName"),
-                                (String) payload.get("lastName"),
-                                (String) payload.get("email")
+                                updatedUsername,
+                                updatedLastName,
+                                updatedFirstName,
+                                updatedEmail
                         );
-                        this.facadeUtilisateur.modifierUtilisateur((UUID) payload.get("userId"), modifierUtilisateurDTO);
-                        LOG.trace("Evenement keycloak de modification d'utilisateur: {}", eventType);
+                        facadeUtilisateur.modifierUtilisateur(
+                                UUID.fromString((String) payload.get("userId")),
+                                modifierUtilisateurDTO
+                        );
+                        LOG.trace("Evenement keycloak de modification d'utilisateur terminé: {}", eventType);
                         break;
+
+
                     case "DELETE":
-                        this.facadeUtilisateur.supprimerUtilisateur((UUID) payload.get("userId"));
-                        LOG.trace("Evenement keycloak de suppresion d'utilisateur: {}", eventType);
+                        facadeUtilisateur.supprimerUtilisateur(UUID.fromString((String) payload.get("userId")));
+                        LOG.trace("Evenement keycloak de suppression d'utilisateur terminé: {}", eventType);
                         break;
+
                     default:
                         LOG.trace("Événement utilisateur non pris en charge: {}", eventType);
                 }
@@ -98,21 +163,21 @@ public class KeycloakEventListener {
 //                                LocalDate.parse((String) createRepresentation.get("dateNaissance"))
                         );
                         this.facadeUtilisateurAdmin.creerUtilisateur(creerUtilisateurDTO, randomUUID());
-                        LOG.trace("Evenement admin keycloak de création d'utilisateur: {}", operationType);
+                        LOG.trace("Evenement admin keycloak de création d'utilisateur terminé: {}", operationType);
                         break;
                     case "UPDATE":
                         ModifierUtilisateurDTO modifierUtilisateurDTO = new ModifierUtilisateurDTO(
                                 (String) createRepresentation.get("username"),
-                                (String) createRepresentation.get("firstName"),
                                 (String) createRepresentation.get("lastName"),
+                                (String) createRepresentation.get("firstName"),
                                 (String) createRepresentation.get("email")
                         );
                         this.facadeUtilisateurAdmin.modifierUtilisateur(UUID.fromString(payload.get("resourcePath").toString().split("/")[1]), modifierUtilisateurDTO, randomUUID());
-                        LOG.trace("Evenement admin keycloak de modification d'utilisateur: {}", operationType);
+                        LOG.trace("Evenement admin keycloak de modification d'utilisateur terminé: {}", operationType);
                         break;
                     case "DELETE":
                         this.facadeUtilisateurAdmin.supprimerUtilisateur(UUID.fromString(payload.get("resourcePath").toString().split("/")[1]), randomUUID());
-                        LOG.trace("Evenement admin keycloak de suppression d'utilisateur: {}", operationType);
+                        LOG.trace("Evenement admin keycloak de suppression d'utilisateur terminé: {}", operationType);
                         break;
                     default:
                         LOG.trace("Événement admin non pris en charge: {}", operationType);
