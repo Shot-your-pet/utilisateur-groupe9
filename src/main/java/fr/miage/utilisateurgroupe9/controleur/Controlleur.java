@@ -17,7 +17,7 @@ public class Controlleur {
         this.facadeUtilisateur = facadeUtilisateur;
     }
 
-    public record ImageInfoDTO(UUID idImage){}
+    public record ImageInfoDTO(Long idImage){}
 
     @PutMapping("/avatar")
     public ResponseEntity<Void> modifierAvatar(Authentication authentication, @RequestBody ImageInfoDTO imageInfoDTO) throws Exception {

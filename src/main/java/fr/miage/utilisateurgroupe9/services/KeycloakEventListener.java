@@ -7,10 +7,8 @@ import fr.miage.utilisateurgroupe9.model.entity.dto.ModifierUtilisateurDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
@@ -23,9 +21,9 @@ public class KeycloakEventListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(KeycloakEventListener.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String KEYCLOAK_QUEUE = "keycloak_events";
-    private static final String UPDATE_AVATAR_QUEUE = "update_avatar";
-    private static final String GET_INFOS_UTILISATEUR_QUEUE = "infos_utilisateur";
+    private static final String KEYCLOAK_QUEUE = "keycloak.keycloak_events";
+    private static final String UPDATE_AVATAR_QUEUE = "images.update_avatar";
+    private static final String GET_INFOS_UTILISATEUR_QUEUE = "utilisateurs.infos_utilisateur";
     private final FacadeUtilisateurAdmin facadeUtilisateurAdmin;
     private final FacadeUtilisateur facadeUtilisateur;
 
@@ -188,7 +186,7 @@ public class KeycloakEventListener {
         }
     }
 
-    public record ImageInfo(UUID idKeycloak, UUID idImage) implements Serializable {
+    public record ImageInfo(UUID idKeycloak, Long idImage) implements Serializable {
     }
 
     @RabbitListener(queues = UPDATE_AVATAR_QUEUE)

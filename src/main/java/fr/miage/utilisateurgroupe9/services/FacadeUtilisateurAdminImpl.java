@@ -33,6 +33,7 @@ public class FacadeUtilisateurAdminImpl implements FacadeUtilisateurAdmin{
                 creerUtilisateurDTO.email(),
                 creerUtilisateurDTO.dateNaissance());
         LOG.trace("Création de l'utilisateur : {} par {}", utilisateur, idKeycloakAdmin);
+        System.out.println(idKeycloakAdmin + "   " + creerUtilisateurDTO.idKeycloak() + "   " + utilisateur);
         return this.utilisateurRepository.save(utilisateur);
         // TODO : envoyer email de confirmation, de bienvenu etc ...
     }
