@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.miage.utilisateurgroupe9.model.entity.dto.CreerUtilisateurDTO;
 import fr.miage.utilisateurgroupe9.model.entity.dto.ModifierUtilisateurDTO;
+import fr.miage.utilisateurgroupe9.model.exceptions.UtilisateurInexistantException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -196,7 +197,7 @@ public class KeycloakEventListener {
     }
 
     @RabbitListener(queues = GET_INFOS_UTILISATEUR_QUEUE)
-    public void getInfosUtilisateur(UUID idKeycloak) {
+    public void getInfosUtilisateur(UUID idKeycloak) throws UtilisateurInexistantException {
         this.facadeUtilisateur.consulterUtilisateur(idKeycloak);
     }
 }
