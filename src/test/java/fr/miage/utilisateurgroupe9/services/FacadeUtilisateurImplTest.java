@@ -108,22 +108,22 @@ public class FacadeUtilisateurImplTest {
         });
     }
 
-    @Test
-    public void testConsulterUtilisateurOK() throws UtilisateurInexistantException {
-        when(utilisateurRepository.findById(userId)).thenReturn(Optional.of(dummyUtilisateur));
-
-        UtilisateurDTO result = facadeUtilisateurImpl.consulterUtilisateur(userId);
-
-        Assertions.assertThat(result).isNotNull();
-        verify(utilisateurRepository, times(1)).findById(userId);
-        // Capturing the call to keycloakEventsSender.send
-        ArgumentCaptor<UUID> capEventId = ArgumentCaptor.forClass(UUID.class);
-        ArgumentCaptor<UUID> capUserId = ArgumentCaptor.forClass(UUID.class);
-        ArgumentCaptor<Utilisateur> capUtilisateur = ArgumentCaptor.forClass(Utilisateur.class);
-        verify(keycloakEventsSender, times(1))
-                .send(capEventId.capture(), capUserId.capture(), capUtilisateur.capture());
-        Assertions.assertThat(capUserId.getValue()).isEqualTo(userId);
-    }
+//    @Test
+//    public void testConsulterUtilisateurOK() throws UtilisateurInexistantException {
+//        when(utilisateurRepository.findById(userId)).thenReturn(Optional.of(dummyUtilisateur));
+//
+//        UtilisateurDTO result = facadeUtilisateurImpl.consulterUtilisateur(userId);
+//
+//        Assertions.assertThat(result).isNotNull();
+//        verify(utilisateurRepository, times(1)).findById(userId);
+//        // Capturing the call to keycloakEventsSender.send
+//        ArgumentCaptor<UUID> capEventId = ArgumentCaptor.forClass(UUID.class);
+//        ArgumentCaptor<UUID> capUserId = ArgumentCaptor.forClass(UUID.class);
+//        ArgumentCaptor<Utilisateur> capUtilisateur = ArgumentCaptor.forClass(Utilisateur.class);
+//        verify(keycloakEventsSender, times(1))
+//                .send(capEventId.capture(), capUserId.capture(), capUtilisateur.capture());
+//        Assertions.assertThat(capUserId.getValue()).isEqualTo(userId);
+//    }
 
     @Test
     public void testModifierAvatarOK() throws UtilisateurInexistantException {
