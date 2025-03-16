@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.miage.utilisateurgroupe9.model.entity.dto.CreerUtilisateurDTO;
 import fr.miage.utilisateurgroupe9.model.entity.dto.ModifierUtilisateurDTO;
+import fr.miage.utilisateurgroupe9.model.entity.dto.UtilisateurDTO;
 import fr.miage.utilisateurgroupe9.model.exceptions.UtilisateurInexistantException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,9 +25,10 @@ public class KeycloakEventListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(KeycloakEventListener.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String KEYCLOAK_QUEUE = "keycloak.keycloak_events";
-    private static final String UPDATE_AVATAR_QUEUE = "images.update_avatar";
-    private static final String GET_INFOS_UTILISATEUR_QUEUE = "utilisateurs.infos_utilisateur";
+    private static final String KEYCLOAK_KEYCLOAK_EVENTS = "keycloak.keycloak_events";
+    private static final String IMAGES_UPDATE_AVATAR = "images.update_avatar";
+    private static final String UTILISATEURS_INFOS_UTILISATEUR = "utilisateurs.infos_utilisateur";
+    private static final String UTILISATEURS_INFOS_UTILISATEURS = "utilisateurs.infos_utilisateurs";
     private final FacadeUtilisateurAdmin facadeUtilisateurAdmin;
     private final FacadeUtilisateur facadeUtilisateur;
 
@@ -34,7 +38,7 @@ public class KeycloakEventListener {
     }
 
 
-    @RabbitListener(queues = KEYCLOAK_QUEUE)
+    @RabbitListener(queues = KEYCLOAK_KEYCLOAK_EVENTS)
     public void receiveMessage(Map<String, Object> payload) {
         try {
             // Convertir le message JSON en une Map
@@ -190,14 +194,30 @@ public class KeycloakEventListener {
     public record ImageInfo(UUID idKeycloak, Long idImage) implements Serializable {
     }
 
-    @RabbitListener(queues = UPDATE_AVATAR_QUEUE)
-    public void modifierAvatar(ImageInfo imageInfo) throws Exception {
+    @RabbitListener(queues = IMAGES_UPDATE_AVATAR)
+    public void modifierAvatar(ImageInfo imageInfo) throws UtilisateurInexistantException {
         LOG.info("Modification de l'avatar de l'utilisateur : {}", imageInfo);
         this.facadeUtilisateur.modifierAvatar(imageInfo.idKeycloak(), imageInfo.idImage());
     }
 
-    @RabbitListener(queues = GET_INFOS_UTILISATEUR_QUEUE)
-    public void getInfosUtilisateur(UUID idKeycloak) throws UtilisateurInexistantException {
-        this.facadeUtilisateur.consulterUtilisateur(idKeycloak);
+
+    // Méthodes pour récupérer les informations d'un utilisateur pour timeline et le test coté image service
+    public record DemandeInfosUtilisateurs(List<UUID> idsKeycloak) implements Serializable { }
+    public record DemandeInfosUtilisateur(UUID idKeycloak) implements Serializable { }
+
+    @RabbitListener(queues = UTILISATEURS_INFOS_UTILISATEUR, containerFactory = "rabbitListenerContainerFactory")
+    public UtilisateurDTO getInfosUtilisateur(DemandeInfosUtilisateur demandeInfosUtilisateur) throws UtilisateurInexistantException {
+        System.out.println("Demande d'infos utilisateurs : " + demandeInfosUtilisateur.idKeycloak());
+        UtilisateurDTO infos = this.facadeUtilisateur.consulterUtilisateur(demandeInfosUtilisateur.idKeycloak());
+        return infos;
+    }
+
+    @RabbitListener(queues = UTILISATEURS_INFOS_UTILISATEURS)
+    public List<UtilisateurDTO> getInfosUtilisateurs(DemandeInfosUtilisateurs demandeInfosUtilisateurs) throws UtilisateurInexistantException {
+        List<UtilisateurDTO> utilisateurs = new ArrayList<>();
+        for (UUID idKeycloak : demandeInfosUtilisateurs.idsKeycloak()) {
+            utilisateurs.add(this.facadeUtilisateur.consulterUtilisateur(idKeycloak));
+        }
+        return utilisateurs;
     }
 }

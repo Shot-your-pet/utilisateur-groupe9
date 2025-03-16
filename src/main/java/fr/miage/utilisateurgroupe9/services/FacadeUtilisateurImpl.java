@@ -77,7 +77,6 @@ public class FacadeUtilisateurImpl implements FacadeUtilisateur{
     public UtilisateurDTO consulterUtilisateur(UUID idKeycloak) throws UtilisateurInexistantException {
         LOG.trace("Consultation de l'utilisateur : {}", idKeycloak);
         Utilisateur utilisateur = this.utilisateurRepository.findById(idKeycloak).orElseThrow(() -> new UtilisateurInexistantException(idKeycloak));
-        this.keycloakEventsSender.send(UUID.randomUUID(), idKeycloak, utilisateur);
         return UtilisateurMapper.toUtilisateurDTO(utilisateur);
     }
 
