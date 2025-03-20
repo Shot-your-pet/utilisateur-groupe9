@@ -1,5 +1,6 @@
 package fr.miage.utilisateurgroupe9.config;
 
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -52,6 +53,16 @@ public class RabbitConfig {
     @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
+    }
+
+    @Bean
+    public Queue creerQueueInfosUtilisateur() {
+        return new Queue("utilisateurs.infos_utilisateur", true);
+    }
+
+    @Bean
+    public Queue creerQueueInfosUtilisateurs() {
+        return new Queue("utilisateurs.infos_utilisateurs", true);
     }
 
 }
