@@ -207,16 +207,24 @@ public class KeycloakEventListener {
 
     @RabbitListener(queues = UTILISATEURS_INFOS_UTILISATEUR, containerFactory = "rabbitListenerContainerFactory")
     public UtilisateurDTO getInfosUtilisateur(DemandeInfosUtilisateur demandeInfosUtilisateur) throws UtilisateurInexistantException {
-        System.out.println("Demande d'infos utilisateurs : " + demandeInfosUtilisateur.idKeycloak());
-        UtilisateurDTO infos = this.facadeUtilisateur.consulterUtilisateur(demandeInfosUtilisateur.idKeycloak());
-        return infos;
+        try {
+            System.out.println("Demande d'infos utilisateurs : " + demandeInfosUtilisateur.idKeycloak());
+            UtilisateurDTO infos = this.facadeUtilisateur.consulterUtilisateur(demandeInfosUtilisateur.idKeycloak());
+            return infos;
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @RabbitListener(queues = UTILISATEURS_INFOS_UTILISATEURS)
     public List<UtilisateurDTO> getInfosUtilisateurs(DemandeInfosUtilisateurs demandeInfosUtilisateurs) throws UtilisateurInexistantException {
         List<UtilisateurDTO> utilisateurs = new ArrayList<>();
-        for (UUID idKeycloak : demandeInfosUtilisateurs.idsKeycloak()) {
-            utilisateurs.add(this.facadeUtilisateur.consulterUtilisateur(idKeycloak));
+        try {
+            for (UUID idKeycloak : demandeInfosUtilisateurs.idsKeycloak()) {
+                utilisateurs.add(this.facadeUtilisateur.consulterUtilisateur(idKeycloak));
+            }
+        }catch (Exception e){
+            utilisateurs.add(null);
         }
         return utilisateurs;
     }
