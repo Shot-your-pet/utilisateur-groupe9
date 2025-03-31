@@ -232,7 +232,7 @@ public class KeycloakEventListener {
     }
 
     @RabbitListener(queues = UTILISATEURS_LISTE_UTILISATEURS)
-    public List<ProfileDTO> getProfileUtilisateurs() {
+    public List<ProfileDTO> getProfileUtilisateurs(DemandeInfosUtilisateurs demandeInfosUtilisateurs) {
         return this.facadeUtilisateur.getProfilesUtilisateurs();
     }
 }
