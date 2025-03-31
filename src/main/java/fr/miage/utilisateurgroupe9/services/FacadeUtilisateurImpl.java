@@ -98,4 +98,10 @@ public class FacadeUtilisateurImpl implements FacadeUtilisateur{
         List<Utilisateur> utilisateurs = this.utilisateurRepository.findAll();
         return utilisateurs.stream().map(UtilisateurMapper::toUtilisateurDTO).toList();
     }
+
+    @Override
+    public List<ProfileDTO> getProfilesUtilisateurs() {
+        List<Utilisateur> utilisateurs = this.utilisateurRepository.findAll();
+        return utilisateurs.stream().map(UtilisateurMapper::toProfileDTO).toList();
+    }
 }

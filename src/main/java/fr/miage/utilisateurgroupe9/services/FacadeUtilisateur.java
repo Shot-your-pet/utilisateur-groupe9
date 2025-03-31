@@ -19,4 +19,5 @@ public interface FacadeUtilisateur {
     void modifierAvatar(UUID idKeycloakUtilisateur, Long idImage) throws UtilisateurInexistantException;
     ProfileDTO getProfileUtilisateur(UUID idKeycloak) throws UtilisateurInexistantException;
     List<UtilisateurDTO> getUtilisateurs();
+    List<ProfileDTO> getProfilesUtilisateurs();
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.miage.utilisateurgroupe9.model.entity.dto.CreerUtilisateurDTO;
 import fr.miage.utilisateurgroupe9.model.entity.dto.ModifierUtilisateurDTO;
+import fr.miage.utilisateurgroupe9.model.entity.dto.ProfileDTO;
 import fr.miage.utilisateurgroupe9.model.entity.dto.UtilisateurDTO;
 import fr.miage.utilisateurgroupe9.model.exceptions.UtilisateurInexistantException;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ public class KeycloakEventListener {
     private static final String IMAGES_UPDATE_AVATAR = "images.update_avatar";
     private static final String UTILISATEURS_INFOS_UTILISATEUR = "utilisateurs.infos_utilisateur";
     private static final String UTILISATEURS_INFOS_UTILISATEURS = "utilisateurs.infos_utilisateurs";
+    private static final String UTILISATEURS_LISTE_UTILISATEURS = "utilisateurs.liste_profile_utilisateurs";
     private final FacadeUtilisateurAdmin facadeUtilisateurAdmin;
     private final FacadeUtilisateur facadeUtilisateur;
 
@@ -227,5 +229,10 @@ public class KeycloakEventListener {
             utilisateurs.add(null);
         }
         return utilisateurs;
+    }
+
+    @RabbitListener(queues = UTILISATEURS_LISTE_UTILISATEURS)
+    public List<ProfileDTO> getProfileUtilisateurs() {
+        return this.facadeUtilisateur.getProfilesUtilisateurs();
     }
 }

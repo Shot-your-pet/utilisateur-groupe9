@@ -65,4 +65,9 @@ public class RabbitConfig {
         return new Queue("utilisateurs.infos_utilisateurs", true);
     }
 
+    @Bean
+    public Queue creerQueueListeUtilisateurs() {
+        return new Queue("utilisateurs.liste_profile_utilisateurs", true);
+    }
+
 }
