@@ -70,4 +70,11 @@ public class RabbitConfig {
         return new Queue("utilisateurs.liste_profile_utilisateurs", true);
     }
 
+    @Bean
+    public Queue creerQueueImagesUpdateAvatar() {
+        return new Queue("images.update_avatar", true);
+    }
+
+
+
 }
