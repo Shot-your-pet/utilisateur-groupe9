@@ -75,6 +75,11 @@ public class RabbitConfig {
         return new Queue("images.update_avatar", true);
     }
 
+    @Bean
+    public Queue creerQueueKeycloak() {
+        return new Queue("keycloak.keycloak_events", true);
+    }
+
 
 
 }
